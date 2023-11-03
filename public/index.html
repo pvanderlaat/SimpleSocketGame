@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Multiplayer Game</title>
+  <style>
+    .player {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+    }
+  </style>
+</head>
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const playerElements = {};
+
+    socket.on('init', ({ players }) => {
+      for (const playerId in players) {
+        const player = players[playerId];
+        createPlayerElement(player);
+      }
+    });
+
+    socket.on('newPlayer', (player) => {
+      createPlayerElement(player);
+    });
+
+    socket.on('playerMoved', ({ playerId, x, y }) => {
+      const player = playerElements[playerId];
+      player.style.left = x + 'px';
+      player.style.top = y + 'px';
+    });
+
+    socket.on('playerDisconnected', (playerId) => {
+      const player = playerElements[playerId];
+      player.remove();
+      delete playerElements[playerId];
+    });
+
+    document.addEventListener('keydown', (e) => {
+      let direction;
+      if (e.key === 'ArrowUp') direction = 'up';
+      else if (e.key === 'ArrowDown') direction = 'down';
+      else if (e.key === 'ArrowLeft') direction = 'left';
+      else if (e.key === 'ArrowRight') direction = 'right';
+
+      if (direction) {
+        socket.emit('move', direction);
+      }
+    });
+
+    function createPlayerElement(player) {
+      const playerElement = document.createElement('div');
+      playerElement.className = 'player';
+      playerElement.style.background = player.color;
+      playerElement.style.left = player.x + 'px';
+      playerElement.style.top = player.y + 'px';
+      document.body.appendChild(playerElement);
+      playerElements[player.id] = playerElement;
+    }
+  </script>
+</body>
+</html>
