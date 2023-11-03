@@ -1,4 +1,7 @@
 # SimpleSocketGame
+
+Install dependencies with 'npm i'
+
 Start the server by running node index.js.
 
 Add new players by opening new tabs at http://localhost:3000
