@@ -8,6 +8,7 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 
+//EXPLAIN APP.USE
 app.use(express.static('public'));
 
 server.listen(PORT, () => {
@@ -62,5 +63,5 @@ function handlePlayerMovement(playerId, direction) {
     player.x += 50;
   }
 
-  io.timeout(50).emit('playerMoved', { playerId, x: player.x, y: player.y });
+  io.emit('playerMoved', { playerId, x: player.x, y: player.y });
 }
