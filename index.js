@@ -8,7 +8,6 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 
-//EXPLAIN APP.USE
 app.use(express.static('public'));
 
 server.listen(PORT, () => {
