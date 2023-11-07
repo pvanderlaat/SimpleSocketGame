@@ -27,6 +27,8 @@ io.on('connection', (socket) => {
     x: Math.floor(Math.random() * 10) * 50,
     y: Math.floor(Math.random() * 10) * 50,
     color,
+    name: '',
+    message: ''
   };
 
   // Add the player to the players object
@@ -43,13 +45,25 @@ io.on('connection', (socket) => {
     handlePlayerMovement(socket.id, direction);
   });
 
+  socket.on('chat message', (msg) => {
+    const playerId = socket.id;
+    players[playerId].message = msg;
+    io.emit('messageSent', { playerId, msg });
+  });
+
+  socket.on('nameGiven', (name) => {
+    const playerId = socket.id;
+    players[playerId].name = name;
+    io.emit('nameSent', { playerId, name });
+  });
+
   // Handle disconnect
   socket.on('disconnect', () => {
     delete players[socket.id];
     io.emit('playerDisconnected', socket.id);
   });
-});
 
+});
 function handlePlayerMovement(playerId, direction) {
   const player = players[playerId];
 
