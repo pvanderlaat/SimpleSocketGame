@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
         newWord();
       } else {
         io.emit("newWord", "loading...")
-        setTimeout(() => startGame(), 5000);
+        setTimeout(() => startGame(), 3000);
       }
     }
   });
