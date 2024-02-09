@@ -49,6 +49,7 @@
   </style>
 </head>
 <body>
+  <div class="wordHeader">loading...</div>
   <div class="chatBox">
     <input class="chatInput">
     <button class="chatButton">Send Message</button>
@@ -59,7 +60,7 @@
 
     const playerElements = {};
 
-    socket.on('init', ({ players }) => {
+    socket.on('init', ({ players, word }) => {
       const person = prompt("Enter your username: ");
       socket.emit('nameGiven', person);
       
@@ -67,10 +68,13 @@
         const player = players[playerId];
         createPlayerElement(player);
       }
+
+      document.getElementsByClassName("wordHeader")[0].innerText = word;
     });
 
     socket.on('newPlayer', (player) => {
       createPlayerElement(player);
+      console.log(player)
     });
 
     socket.on('playerMoved', ({ playerId, x, y }) => {
@@ -85,9 +89,26 @@
       },50)
     });
 
-    socket.on('messageSent', ({ playerId, msg }) => {
+    socket.on("reviveAll", () => {
+      for (var id of Object.keys(playerElements)) {
+        playerElements[id].style.opacity = 1;
+      }
+    })
+
+    socket.on("newWord", (word) => {
+      document.getElementsByClassName("wordHeader")[0].innerText = word;
+    })
+
+    socket.on('messageSent', ({ playerId, msg, correct }) => {
       const player = playerElements[playerId];
+      console.log(playerElements)
+      console.log(player, playerId);
       player.children[0].innerText = msg;
+
+      if (!correct) {
+        player.style.opacity = .1;
+      }
+      
     });
 
     socket.on('nameSent', ({ playerId, name }) => {
@@ -145,6 +166,7 @@
       playerElement.style.background = player.color;
       playerElement.style.left = player.x + 'px';
       playerElement.style.top = player.y + 'px';
+      playerElement.style.opacity = player.state == "dead" ? .1 : 1
 
       document.body.appendChild(playerElement);
       playerElements[player.id] = playerElement;
