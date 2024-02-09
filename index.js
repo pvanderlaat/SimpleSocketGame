@@ -9,8 +9,6 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
-const timer = ms => new Promise(res => setTimeout(res, ms));
-
 
 app.use(express.static('public'));
 
@@ -77,8 +75,6 @@ io.on('connection', (socket) => {
     var correct = word == msg;
     io.emit('messageSent', {playerId, msg, correct});
 
-    console.log(players[socket.id].name, playerId, alive, safe)
-
     alive.splice(alive.indexOf(playerId), 1);
     players[playerId].state = "dead";
     if (correct) {
@@ -87,9 +83,7 @@ io.on('connection', (socket) => {
     }
 
     if (alive.length == 1) {
-      console.log("culling the weak")
       playerId = alive[0];
-      console.log(playerId, id)
       var msg = "";
       var correct = false;
       io.emit('messageSent', {playerId, msg, correct});
@@ -138,7 +132,6 @@ function handlePlayerMovement(playerId, direction) {
 }
 
 async function startGame() {
-  console.log("restarting game...")
   alive = []
   for (const playerId of Object.keys(players)) {
     msg = ""
