@@ -90,7 +90,7 @@ io.on('connection', (socket) => {
       console.log("culling the weak")
       playerId = alive[0];
       console.log(playerId, id)
-      var msg = "lol";
+      var msg = "";
       var correct = false;
       io.emit('messageSent', {playerId, msg, correct});
       players[id].state = "dead";
@@ -144,6 +144,8 @@ async function startGame() {
     msg = ""
     correct = true;
     io.emit('messageSent', {playerId, msg, correct});
+    players[playerId].message = "";
+
     alive.push(playerId);
     players[playerId].state = "alive"
   }
@@ -154,10 +156,10 @@ async function startGame() {
 
 function newWord() {
   for (const id of safe) {
-    safe.splice(safe.indexOf(id), 1);
     alive.push(id);
     players[id].state = "alive";
   }
+  safe = [];
 
   word = words[Math.floor(Math.random() * 9884)]
   io.emit("newWord", word)
