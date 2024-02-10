@@ -82,7 +82,6 @@
 
     socket.on('newPlayer', (player) => {
       createPlayerElement(player);
-      console.log(player)
     });
 
     socket.on('playerMoved', ({ playerId, x, y }) => {
@@ -109,8 +108,6 @@
 
     socket.on('messageSent', ({ playerId, msg, correct }) => {
       const player = playerElements[playerId];
-      console.log(playerElements)
-      console.log(player, playerId);
       player.children[0].innerText = msg;
 
       if (!correct) {

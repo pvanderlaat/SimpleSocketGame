@@ -47,14 +47,6 @@ io.on('connection', (socket) => {
   // Broadcast the new player to all other connected clients
   socket.broadcast.emit('newPlayer', player);
 
-  for (var id of Object.keys(players)) {
-    if (players[id].state == 'alive') {
-      alive.push(id);
-    } else if (players[id].state == 'safe') {
-      safe.push(id);
-    }
-  }
-
   if (Object.keys(players).length == 1) {
     startGame();
   }   
@@ -87,7 +79,7 @@ io.on('connection', (socket) => {
       var msg = "";
       var correct = false;
       io.emit('messageSent', {playerId, msg, correct});
-      players[id].state = "dead";
+      players[playerId].state = "dead";
       alive.splice(alive.indexOf(playerId), 1);
     }
 
@@ -110,6 +102,12 @@ io.on('connection', (socket) => {
 
   // Handle disconnect
   socket.on('disconnect', () => {
+    if (players[socket.id].state == "alive") {
+      alive.splice(alive.indexOf(socket.id), 1);
+    } else if (players[socket.id].state == "safe") {
+      safe.splice(safe.indexOf(socket.id), 1);
+    }
+
     delete players[socket.id];
     io.emit('playerDisconnected', socket.id);
   });
